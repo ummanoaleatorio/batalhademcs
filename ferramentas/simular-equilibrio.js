@@ -52,7 +52,9 @@ function round(v, a, b, perfil, voceComeca, rn) {
   ordem.forEach((x, e) => { const c = x === 'v' ? cv : ca; if (x === 'v') entradaVoce(MCS[v], b, perfil, sv, cv, mv); else entradaAdv(MCS[a], b, sa, ca); if (e === 0) c.imp += 6; if (e === ult) c.imp += 2; /* BONUS do jogo: iniciativa 6, última palavra 2 */ });
   let votos = 0;
   const nv = MCS[v].nivel, na = MCS[a].nivel, dono = na === 5 && (nv === 2 || nv === 3) ? 'a' : nv === 5 && (na === 2 || na === 3) ? 'v' : null;
-  for (const w of VOTO) { if (w === VOTO[2] && dono) { if (dono === 'v') votos++; continue; } const nota = (c) => (c.tec * w.tec + c.imp * w.imp + c.pla * w.pla) * (1 + S(-w.s, w.s)); if (nota(cv) > nota(ca)) votos++; }
+  const tot = (c) => c.tec + c.imp + c.pla;
+  const donoVale = dono && !(dono === 'a' ? tot(cv) - tot(ca) > 35 : tot(ca) - tot(cv) > 35);   // fraco abriu mais de 35: plateia livre
+  for (const w of VOTO) { if (w === VOTO[2] && donoVale) { if (dono === 'v') votos++; continue; } const nota = (c) => (c.tec * w.tec + c.imp * w.imp + c.pla * w.pla) * (1 + S(-w.s, w.s)); if (nota(cv) > nota(ca)) votos++; }
   return votos >= 2;
 }
 function batalha(v, a, perfil) {

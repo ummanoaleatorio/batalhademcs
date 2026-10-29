@@ -505,11 +505,11 @@ body.leve .parede-tags span { text-shadow: none; }
 .chave-status { min-height: 1.6em; margin: 6px 0 0; font-size: 1.05rem; color: var(--texto-2); text-align: center; }
 .chave-status b { color: var(--tinta); }
 .ao-vivo-txt { font-style: normal; color: var(--vermelho); font-family: var(--f-rua); animation: tremer .5s infinite alternate; }
-.cv-jogo--rolando { outline: 3px solid var(--vermelho); outline-offset: 2px; animation: cv-rolando .5s ease-in-out infinite alternate; }
+.cv-jogo--rolando { box-shadow: 0 0 0 3px var(--vermelho), 2px 3px 0 rgba(20, 18, 18, .18); animation: cv-brilho-v .5s ease-in-out infinite alternate; }
 .cv-jogo--rolando .cv-chip img { animation: cv-chacoalha .18s infinite alternate; }
 .cv-jogo--revelado { animation: cv-revela .45s cubic-bezier(.2, 1.7, .4, 1); }
 .cv-jogo--revelado em { animation: bump .5s cubic-bezier(.2, 1.8, .4, 1); display: inline-block; }
-.cv-jogo--sua-vez { outline: 3px solid var(--ouro); outline-offset: 3px; animation: cv-rolando .7s ease-in-out infinite alternate; }
+.cv-jogo--sua-vez { animation: cv-brilho-o .7s ease-in-out infinite alternate; }
 @keyframes cv-rolando { from { transform: scale(1); } to { transform: scale(1.04); } }
 @keyframes cv-chacoalha { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
 @keyframes cv-revela { 0% { transform: scale(1.12); } 100% { transform: scale(1); } }
@@ -519,3 +519,8 @@ body.leve .parede-tags span { text-shadow: none; }
 .pista canvas { display: block; width: 100%; height: 100%; }
 canvas.plateia-sombra { width: 100%; display: block; }
 .tela-b { overflow-x: clip; }
+
+/* destaques da chave: só sombra (sem crescer pra fora), com folga no contêiner pra não cortar */
+.chave-vis, .pos__chave { padding: 8px 10px 14px; }
+@keyframes cv-brilho-v { from { box-shadow: 0 0 0 3px var(--vermelho); } to { box-shadow: 0 0 0 3px var(--vermelho), 0 0 10px 2px rgba(193, 50, 52, .55); } }
+@keyframes cv-brilho-o { from { box-shadow: 0 0 0 3px var(--ouro), 3px 4px 0 var(--tinta); } to { box-shadow: 0 0 0 3px var(--ouro), 0 0 12px 3px rgba(242, 185, 46, .7); } }

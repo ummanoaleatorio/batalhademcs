@@ -12,7 +12,7 @@ cd estadual-sp
 python -m http.server 8000      # ou: npx serve .
 ```
 
-Depois abra `http://localhost:8000` (chaveamento) e `http://localhost:8000/batalha.html` (jogo).
+Depois abra `http://localhost:8000` (chaveamento) e `http://localhost:8000/batalha/` (jogo).
 
 ## Arquivos
 
@@ -20,7 +20,8 @@ Depois abra `http://localhost:8000` (chaveamento) e `http://localhost:8000/batal
 |---|---|
 | `index.html` · `style.css` · `script.js` | Chaveamento ao vivo (sorteio segurando o botão, palco, mural, campeão) |
 | `compartilhar.js` | Gera a imagem de compartilhamento do campeão |
-| `batalha.html` · `batalha.css` · `batalha.js` | **Modo Carreira** (simulador de batalha) |
+| `batalha/index.html` · `batalha.css` · `batalha.js` | **Modo Carreira** (simulador de batalha), no endereço `/batalha/`. A página fica na pasta `batalha/` e puxa os arquivos da raiz com `../`; o `data-raiz="../"` no `<html>` diz ao JS onde ficam as imagens e os beats |
+| `batalha.html` | Só redireciona o endereço antigo para `/batalha/` |
 | `musica.js` | Toca os beats. Carrega os loops prontos de `beats/*.mp3`; se o arquivo não abrir (ex.: página aberta direto do disco), monta o som na hora com Web Audio. Usado pelos dois |
 | `beats/` | Os 8 loops gravados em MP3 (~2,9 MB no total; cada batalha baixa só os 3 que usa) |
 | `imagens/` | Fotos dos 16 MCs, logo CPBMC, texturas |
@@ -52,7 +53,7 @@ O CSP (`script-src 'self'`) exige que todo JS fique em arquivo próprio, sem `<s
   - Os beats **dinâmicos** usam `padrao: 'variado'` mais `seq` (lista de ritmos) e `troca` (a cada quantos compassos muda). Toda batalha tem pelo menos um.
 - **Votos** ficam em `VOTANTES`: Jurado 1 (técnica), Jurado 2 (punchline) e Plateia.
   - Os pontos são separados em técnica, impacto e plateia, e cada votante pesa diferente.
-  - **Regra da plateia:** nível 5 contra nível 2 ou 3 sempre leva o voto da plateia (função `donoDaRoda`).
+  - **Regra da plateia:** nível 5 contra nível 2 ou 3 leva o voto da plateia (função `donoDaRoda`). A exceção: se o mais fraco abrir mais de 35 pontos no round (`VIRADA_PLATEIA`), a plateia vota livre.
 - **Batalhas da chave sem você:** `simularBatalha()` usa `SIM` (peso do nível, dos atributos e da forma do dia). A força de cada nível vem de uma tabela, então o 4 fica perto do 5. Hoje o mais fraco vence: 2x4 ~21%, 3x4 ~36%, 4x5 ~43%, 3x5 ~13%.
 - **Dificuldade da IA:** em `planejarEntradaAdv`, `forca * .66 + nivel * .08 + formaAdv`. A sorte dos votos fica em `ruido`, e a "forma do dia" fica em `formaVoce` e `formaAdv`, dentro de `iniciarRound`.
 - Antes de mudar esses números, rode `node ferramentas/simular-equilibrio.js` e compare as tabelas. Hoje, com um MC nível 2 jogando "bom", a chance é ~50% contra nível 4 e ~4% contra nível 5.

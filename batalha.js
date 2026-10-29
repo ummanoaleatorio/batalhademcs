@@ -53,6 +53,10 @@ const icone = (id, c = '') => `<svg class="${c}" aria-hidden="true"><use href="#
 const REDUZIR = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* atributos secretos (0–100), derivados do nível + um "jeito" próprio de cada MC */
+/* a página do jogo fica em /batalha/, então os arquivos da raiz levam o prefixo "../" (data-raiz no <html>) */
+const RAIZ = document.documentElement.dataset.raiz || '';
+MCS.forEach((mc) => { mc.imagem = RAIZ + mc.imagem; });
+
 MCS.forEach((mc, i) => {
   const base = [0, 52, 58, 64, 70, 75][mc.nivel];
   const jeito = (k) => Math.round(limitar(base + (semente(i * 7 + k) - .5) * 26, 25, 98));
@@ -260,7 +264,9 @@ function simularBatalha(a, b) {
   const formaA = sorte(-SIM.forma, SIM.forma), formaB = sorte(-SIM.forma, SIM.forma);
   for (let r = 0; placar[0] < 2 && placar[1] < 2; r++) {
     const pA = 1 / (1 + Math.exp(-(forca(a, beats[r]) + formaA - forca(b, beats[r]) - formaB) / SIM.divisor));
-    const votosA = (Math.random() < pA) + (Math.random() < pA) + (dono === null ? Math.random() < pA : dono === a);   // 2 jurados + plateia
+    const pFraco = dono === a ? 1 - pA : pA;   // round muito a favor do mais fraco: a plateia vota livre
+    const donoVale = dono !== null && pFraco < .75;
+    const votosA = (Math.random() < pA) + (Math.random() < pA) + (donoVale ? dono === a : Math.random() < pA);   // 2 jurados + plateia
     placar[votosA >= 2 ? 0 : 1]++;
   }
   return { vencedor: placar[0] > placar[1] ? a : b, placar };
@@ -1119,8 +1125,13 @@ const VOTANTES = [
   { id: 'j2', nome: 'Jurado 2', olho: 'punchline e impacto', peso: { tec: .5, imp: 1.1, pla: .3 }, ruido: .26 },
   { id: 'pl', nome: 'Plateia',  olho: 'barulho da roda',     peso: { tec: .4, imp: .8, pla: 1.2 }, ruido: .38 }
 ];
+const VIRADA_PLATEIA = 35;   // se o MC mais fraco abrir mais que isso de pontos no round, a plateia vota livre
 function apurarVotos(R) {
-  const dono = donoDaRoda(J.voce, J.bat.adv);
+  let dono = donoDaRoda(J.voce, J.bat.adv);
+  if (dono !== null) {
+    const fraco = dono === J.voce ? 'adv' : 'voce';
+    if (R.pontos[fraco] - R.pontos[outro(fraco)] > VIRADA_PLATEIA) dono = null;   // atropelou: a roda reconhece
+  }
   return VOTANTES.map((v) => {
     if (v.id === 'pl' && dono !== null) return { ...v, voto: dono === J.voce ? 'voce' : 'adv', dono: true };
     const nota = (l) => { const c = R.cat[l]; return (c.tec * v.peso.tec + c.imp * v.peso.imp + c.pla * v.peso.pla) * (1 + sorte(-v.ruido, v.ruido)); };

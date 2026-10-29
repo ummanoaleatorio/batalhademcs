@@ -315,7 +315,7 @@ const Musica = (() => {
     if (r && r.then) r.then(ok, erro);
   });
   async function carregarArquivo(id) {
-    const resp = await fetch(`beats/${id}.mp3`);
+    const resp = await fetch(`${document.documentElement.dataset.raiz || ''}beats/${id}.mp3`);
     if (!resp.ok) throw new Error('sem arquivo');
     const buf = await decodificar(await resp.arrayBuffer());
     const E = ESTILOS[id], sr = buf.sampleRate;
