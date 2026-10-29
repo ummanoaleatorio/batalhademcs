@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#141212">
+  <!-- Segurança: só roda scripts do próprio site; fontes só do Google Fonts -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="Modo carreira do Estadual SP 2026: escolha seu MC, encare a chave e vença as 4 batalhas, cada round num beat diferente. Realização CPBMC.">
+  <meta property="og:title" content="Simulador de Batalha · Estadual SP 2026">
+  <meta property="og:description" content="Escolha seu MC e encare a batalha: ímpar ou par, 3 rounds, a plateia decide.">
+  <meta property="og:url" content="https://batalhademcs.com.br/batalha.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://batalhademcs.com.br/imagens/cpbmc-logo.png">
+  <title>Simulador de Batalha · Estadual SP 2026</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link rel="icon" href="imagens/cpbmc-logo.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="batalha.css">
+</head>
+<body class="pg-batalha" data-fase="escolha-mc">
+
+  <!-- ============ ÍCONES E FILTROS (desenhados à mão) ============ -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- tremido de marcador para as linhas do chaveamento -->
+      <filter id="f-marcador" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/>
+        <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+      </filter>
+      <symbol id="i-dado" viewBox="0 0 32 32"><path d="M6 8c6-3 14-3 20 0 2 6 2 12 0 18-6 2-14 2-20 0-2-6-2-12 0-18z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="11" cy="12" r="2.2" fill="currentColor"/><circle cx="21" cy="21" r="2.2" fill="currentColor"/><circle cx="16" cy="16.5" r="2.2" fill="currentColor"/></symbol>
+      <symbol id="i-voltar" viewBox="0 0 32 32"><path d="M12 7 5 14l7 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 14c9-1 17 0 19 7 1 4-2 6-5 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+      <symbol id="i-reiniciar" viewBox="0 0 32 32"><path d="M25 12a10 10 0 1 0 1 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M26 5v8h-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-som" viewBox="0 0 32 32"><path d="M5 12h5l7-6v20l-7-6H5z" fill="currentColor"/><path d="M21 11c3 3 3 7 0 10M24 7c5 5 5 13 0 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+      <symbol id="i-mudo" viewBox="0 0 32 32"><path d="M5 12h5l7-6v20l-7-6H5z" fill="currentColor"/><path d="M21 12l7 8M28 12l-7 8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-play" viewBox="0 0 32 32"><path d="M9 6c7 3 13 6 18 10-5 4-11 7-18 10-1-7-1-13 0-20z" fill="currentColor"/></symbol>
+      <symbol id="i-seta" viewBox="0 0 40 20"><path d="M2 11c10-3 22-3 34-1M28 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-trofeu" viewBox="0 0 64 64"><path d="M18 8c9-1 19-1 28 0 1 13-2 24-14 27C20 32 17 21 18 8z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><path d="M18 13c-6-1-10 2-9 7 1 6 6 8 11 8M46 13c6-1 10 2 9 7-1 6-6 8-11 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M32 35v10M22 47c6-2 14-2 20 0l1 8H21z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+      <symbol id="i-coroa" viewBox="0 0 160 70"><path d="M8 60 L20 14 L52 44 L80 6 L108 44 L140 14 L152 60 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+      <symbol id="i-estrela" viewBox="0 0 60 60"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M30 4l7 18 19 1-15 12 6 19-17-11-16 11 5-19L4 23l19-1z" stroke-width="4"/><path d="M28 7l8 17 17 2-13 11 4 17-15-10-15 11 5-18L7 26l18-2z" stroke-width="2" opacity=".7"/></g></symbol>
+      <symbol id="i-radio" viewBox="0 0 220 150"><g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 34c-3-14 2-22 16-24 36-4 72-4 108 0 14 2 19 10 16 24"/><path d="M12 38c64-6 132-6 196 0 4 32 4 66 0 98-64 6-132 6-196 0-4-32-4-66 0-98z"/><circle cx="56" cy="90" r="30"/><circle cx="56" cy="90" r="13"/><circle cx="164" cy="90" r="30"/><circle cx="164" cy="90" r="13"/><path d="M92 64c12-1 24-1 36 0v40c-12 1-24 1-36 0z"/><circle cx="103" cy="84" r="6"/><circle cx="117" cy="84" r="6"/><path d="M90 52h40M24 52h12M184 52h12"/></g></symbol>
+      <symbol id="i-coracao" viewBox="0 0 32 32"><path d="M16 28C9 22 3 17 3 10.5 3 6.5 6 4 9.5 4c2.7 0 4.9 1.6 6.5 4 1.6-2.4 3.8-4 6.5-4C26 4 29 6.5 29 10.5 29 17 23 22 16 28z" fill="currentColor" stroke="#141212" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+      <symbol id="i-compartilhar" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v16M9 11l7-7 7 7"/><path d="M8 15H6c-1 4-1 8 0 12 7 1 13 1 20 0 1-4 1-8 0-12h-2"/></g></symbol>
+      <symbol id="i-mic" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="3" width="10" height="16" rx="5"/><path d="M7 14c0 6 4 9 9 9s9-3 9-9M16 23v6M11 29h10"/></g></symbol>
+      <symbol id="i-mao" viewBox="0 0 32 32"><path d="M10 15V7.5a2 2 0 0 1 4 0V14m0-8a2 2 0 0 1 4 0v8m0-6.5a2 2 0 0 1 4 0V15m0-4a2 2 0 0 1 4 0v8c0 6-4 10-9.5 10S9 26 7 22l-3-6a2 2 0 0 1 3.4-2L10 17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-circulo" viewBox="0 0 120 60" preserveAspectRatio="none"><path d="M70 6C38 2 6 12 5 30s30 26 62 24 49-12 47-27C112 12 86 5 52 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="parede-tags" id="parede-tags" aria-hidden="true"></div>
+
+  <!-- ============ TOPO ============ -->
+  <header class="topo">
+    <div class="marca-grupo">
+      <a class="selo selo--topo" href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener" title="CPBMC no Instagram">
+        <img src="imagens/cpbmc-logo.png" alt="CPBMC" width="249" height="237">
+      </a>
+      <a class="marca" href="index.html" aria-label="Estadual SP 2026 — chaveamento">
+        <span class="marca__tag">Estadual</span><span class="marca__sp">SP</span><span class="marca__ano">2026</span>
+      </a>
+    </div>
+
+    <nav class="abas-site" aria-label="Seções do site">
+      <a class="aba-site" href="index.html">Chaveamento</a>
+      <a class="aba-site ativa" href="batalha.html" aria-current="page"><svg aria-hidden="true"><use href="#i-mic"/></svg>Batalha</a>
+    </nav>
+
+    <nav class="acoes" aria-label="Controles">
+      <button class="acao" id="btn-reiniciar" type="button" title="Recomeçar"><svg><use href="#i-reiniciar"/></svg><span>Recomeçar</span></button>
+      <button class="acao acao--musica" id="btn-musica" type="button" title="Tocar o beat" aria-pressed="false">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Beat</span>
+      </button>
+      <button class="acao acao--som" id="btn-som" type="button" title="Som ligado" aria-pressed="true"><svg><use href="#i-som"/></svg></button>
+    </nav>
+  </header>
+
+  <main class="batalha" id="batalha">
+    <!-- 1) ESCOLHER O MC -->
+    <section class="tela-b" id="tela-mc" aria-labelledby="titulo-mc">
+      <header class="tela-b__cab">
+        <p class="tela-b__eyebrow">modo carreira</p>
+        <h1 class="titulo-pincel" id="titulo-mc"><span class="pincel-preto">Escolhe</span> <span class="pincel-vermelho">teu MC</span></h1>
+        <p class="tela-b__sub">A chave do Estadual é sorteada e a missão é vencer as 4 batalhas até o título.</p>
+        <div class="tela-b__acoes"><button class="btn-tinta btn-tinta--xl" id="btn-aleatorio" type="button">MC aleatório</button></div>
+      </header>
+      <div class="escolha" id="grade-mc" role="list"></div>
+    </section>
+
+    <!-- 2) A CHAVE -->
+    <section class="tela-b" id="tela-chave" aria-labelledby="titulo-chave" hidden>
+      <header class="tela-b__cab">
+        <h1 class="titulo-pincel" id="titulo-chave"><span class="pincel-preto">A chave</span> <span class="pincel-vermelho">do Estadual</span></h1>
+        <p class="tela-b__sub">Você é <b id="chave-titulo-mc"></b>. Oitavas, quartas, semi e final: perdeu, tá fora.</p>
+        <div class="tela-b__acoes">
+          <button class="btn-tinta btn-tinta--xl" id="btn-comecar" type="button">Ir pra primeira batalha</button>
+          <button class="btn-giz" id="btn-resortear" type="button">sortear a chave de novo</button>
+          <button class="btn-giz" id="btn-trocar" type="button">trocar de MC</button>
+          <button class="btn-giz" id="btn-pular-chave" type="button" hidden>pular pros resultados</button>
+        </div>
+        <p class="chave-status" id="chave-status" aria-live="polite"></p>
+      </header>
+      <div class="chave-vis" id="chave-vis"></div>
+    </section>
+
+    <!-- 3) PRÉ-BATALHA -->
+    <section class="tela-b pre" id="tela-pre" hidden></section>
+
+    <!-- 4) ARENA AO VIVO -->
+    <section class="tela-b arena" id="tela-arena" aria-label="Batalha ao vivo" hidden>
+      <div class="placar" id="placar"></div>
+      <div class="arena__corpo">
+        <div class="palco" id="palco" aria-live="polite"></div>
+        <div class="lances-box">
+          <h2 class="lances-box__titulo">Lance a lance</h2>
+          <ol class="lances" id="lances" aria-live="polite"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5) DEPOIS DA BATALHA -->
+    <section class="tela-b pos" id="tela-pos" hidden></section>
+  </main>
+
+  <footer class="rodape-mini">
+    <p class="creditos">
+      <span class="creditos__par">organização <a href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener">@cpbmc</a></span>
+      <span aria-hidden="true">✕</span>
+      <span class="creditos__par">artes <a href="https://www.instagram.com/osuporteline/" target="_blank" rel="noopener">@osuporteline</a></span>
+    </p>
+    <p class="rodape-mini__nota">Simulação para diversão: os níveis são fictícios e não representam os MCs de verdade.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="efeitos" id="efeitos" aria-hidden="true"></div>
+
+  <script src="batalha.js"></script>
+  <script src="musica.js"></script>
+</body>
+</html>

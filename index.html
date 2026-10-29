@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#141212">
+  <!-- Segurança: só roda scripts do próprio site; fontes só do Google Fonts -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' data: blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="Estadual SP 2026 · Batalha de MCs — monte o seu chaveamento, escolha os vencedores e compartilhe o seu campeão. Realização CPBMC.">
+  <meta property="og:title" content="Estadual SP 2026 · Batalha de MCs">
+  <meta property="og:description" content="Monte o seu chaveamento e compartilhe o seu campeão.">
+  <meta property="og:url" content="https://batalhademcs.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://batalhademcs.com.br/imagens/cpbmc-logo.png">
+  <title>Estadual SP 2026 · Batalha de MCs</title>
+
+  <!-- Tipografia: Anton (títulos), Permanent Marker (marcador/grafite), Barlow Condensed (textos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="imagens/cpbmc-logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-tela="inicio">
+
+  <!-- ============ ÍCONES E FILTROS (desenhados à mão) ============ -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- tremido de marcador para as linhas do chaveamento -->
+      <filter id="f-marcador" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7"/>
+        <feDisplacementMap in="SourceGraphic" scale="3.2"/>
+      </filter>
+      <symbol id="i-dado" viewBox="0 0 32 32"><path d="M6 8c6-3 14-3 20 0 2 6 2 12 0 18-6 2-14 2-20 0-2-6-2-12 0-18z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="11" cy="12" r="2.2" fill="currentColor"/><circle cx="21" cy="21" r="2.2" fill="currentColor"/><circle cx="16" cy="16.5" r="2.2" fill="currentColor"/></symbol>
+      <symbol id="i-voltar" viewBox="0 0 32 32"><path d="M12 7 5 14l7 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 14c9-1 17 0 19 7 1 4-2 6-5 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+      <symbol id="i-reiniciar" viewBox="0 0 32 32"><path d="M25 12a10 10 0 1 0 1 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M26 5v8h-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-som" viewBox="0 0 32 32"><path d="M5 12h5l7-6v20l-7-6H5z" fill="currentColor"/><path d="M21 11c3 3 3 7 0 10M24 7c5 5 5 13 0 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+      <symbol id="i-mudo" viewBox="0 0 32 32"><path d="M5 12h5l7-6v20l-7-6H5z" fill="currentColor"/><path d="M21 12l7 8M28 12l-7 8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-play" viewBox="0 0 32 32"><path d="M9 6c7 3 13 6 18 10-5 4-11 7-18 10-1-7-1-13 0-20z" fill="currentColor"/></symbol>
+      <symbol id="i-seta" viewBox="0 0 40 20"><path d="M2 11c10-3 22-3 34-1M28 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-trofeu" viewBox="0 0 64 64"><path d="M18 8c9-1 19-1 28 0 1 13-2 24-14 27C20 32 17 21 18 8z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><path d="M18 13c-6-1-10 2-9 7 1 6 6 8 11 8M46 13c6-1 10 2 9 7-1 6-6 8-11 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M32 35v10M22 47c6-2 14-2 20 0l1 8H21z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+      <symbol id="i-coroa" viewBox="0 0 160 70"><path d="M8 60 L20 14 L52 44 L80 6 L108 44 L140 14 L152 60 Z" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+      <symbol id="i-estrela" viewBox="0 0 60 60"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M30 4l7 18 19 1-15 12 6 19-17-11-16 11 5-19L4 23l19-1z" stroke-width="4"/><path d="M28 7l8 17 17 2-13 11 4 17-15-10-15 11 5-18L7 26l18-2z" stroke-width="2" opacity=".7"/></g></symbol>
+      <symbol id="i-radio" viewBox="0 0 220 150"><g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M40 34c-3-14 2-22 16-24 36-4 72-4 108 0 14 2 19 10 16 24"/><path d="M12 38c64-6 132-6 196 0 4 32 4 66 0 98-64 6-132 6-196 0-4-32-4-66 0-98z"/><circle cx="56" cy="90" r="30"/><circle cx="56" cy="90" r="13"/><circle cx="164" cy="90" r="30"/><circle cx="164" cy="90" r="13"/><path d="M92 64c12-1 24-1 36 0v40c-12 1-24 1-36 0z"/><circle cx="103" cy="84" r="6"/><circle cx="117" cy="84" r="6"/><path d="M90 52h40M24 52h12M184 52h12"/></g></symbol>
+      <symbol id="i-coracao" viewBox="0 0 32 32"><path d="M16 28C9 22 3 17 3 10.5 3 6.5 6 4 9.5 4c2.7 0 4.9 1.6 6.5 4 1.6-2.4 3.8-4 6.5-4C26 4 29 6.5 29 10.5 29 17 23 22 16 28z" fill="currentColor" stroke="#141212" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+      <symbol id="i-compartilhar" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4v16M9 11l7-7 7 7"/><path d="M8 15H6c-1 4-1 8 0 12 7 1 13 1 20 0 1-4 1-8 0-12h-2"/></g></symbol>
+      <symbol id="i-mic" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="3" width="10" height="16" rx="5"/><path d="M7 14c0 6 4 9 9 9s9-3 9-9M16 23v6M11 29h10"/></g></symbol>
+      <symbol id="i-circulo" viewBox="0 0 120 60" preserveAspectRatio="none"><path d="M70 6C38 2 6 12 5 30s30 26 62 24 49-12 47-27C112 12 86 5 52 8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- Parede pichada ao fundo (tags geradas pelo JS + textura em SVG) -->
+  <div class="parede-tags" id="parede-tags" aria-hidden="true"></div>
+
+  <!-- ============ TOPO ============ -->
+  <header class="topo">
+    <div class="marca-grupo">
+      <a class="selo selo--topo" href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener" title="CPBMC no Instagram">
+        <img src="imagens/cpbmc-logo.png" alt="CPBMC" width="249" height="237">
+      </a>
+      <a class="marca" href="#" id="marca" aria-label="Estadual SP 2026 — início">
+        <span class="marca__tag">Estadual</span><span class="marca__sp">SP</span><span class="marca__ano">2026</span>
+      </a>
+    </div>
+
+    <ol class="trilha" id="trilha" aria-label="Progresso do campeonato">
+      <li><button class="trilha__passo" type="button" data-passo="0"><b>16</b><small>1ª fase</small><svg class="trilha__circ"><use href="#i-circulo"/></svg></button></li>
+      <li class="trilha__risco" aria-hidden="true"></li>
+      <li><button class="trilha__passo" type="button" data-passo="1"><b>8</b><small>2ª fase</small><svg class="trilha__circ"><use href="#i-circulo"/></svg></button></li>
+      <li class="trilha__risco" aria-hidden="true"></li>
+      <li><button class="trilha__passo" type="button" data-passo="2"><b>4</b><small>semi</small><svg class="trilha__circ"><use href="#i-circulo"/></svg></button></li>
+      <li class="trilha__risco" aria-hidden="true"></li>
+      <li><button class="trilha__passo" type="button" data-passo="3"><b>2</b><small>final</small><svg class="trilha__circ"><use href="#i-circulo"/></svg></button></li>
+      <li class="trilha__risco" aria-hidden="true"></li>
+      <li><button class="trilha__passo" type="button" data-passo="4"><svg class="trilha__trofeu" aria-label="Campeão"><use href="#i-trofeu"/></svg><small>campeão</small><svg class="trilha__circ"><use href="#i-circulo"/></svg></button></li>
+    </ol>
+
+    <nav class="acoes" aria-label="Controles do campeonato">
+      <a class="acao acao--batalha" href="batalha.html" title="Simulador de batalha: você é um dos MCs">
+        <svg><use href="#i-mic"/></svg><span>Batalha</span>
+      </a>
+      <button class="acao acao--fogo" id="btn-iniciar" type="button" title="Iniciar campeonato">
+        <svg><use href="#i-play"/></svg><span>Iniciar</span>
+      </button>
+      <button class="acao" id="btn-sortear" type="button" title="Sortear confrontos">
+        <svg><use href="#i-dado"/></svg><span>Sortear</span>
+      </button>
+      <button class="acao" id="btn-desfazer" type="button" title="Desfazer último resultado (Ctrl+Z)">
+        <svg><use href="#i-voltar"/></svg><span>Desfazer</span>
+      </button>
+      <button class="acao" id="btn-reiniciar" type="button" title="Reiniciar campeonato">
+        <svg><use href="#i-reiniciar"/></svg><span>Reiniciar</span>
+      </button>
+      <button class="acao acao--musica" id="btn-musica" type="button" title="Tocar o beat" aria-pressed="false">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Beat</span>
+      </button>
+      <button class="acao acao--som" id="btn-som" type="button" title="Som ligado" aria-pressed="true">
+        <svg><use href="#i-som"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============ TELA INICIAL ============ -->
+    <section class="tela tela-inicio" id="tela-inicio" aria-labelledby="titulo-evento">
+      <div class="parede-lambes" id="parede-lambes" aria-hidden="true"></div>
+
+      <svg class="grafite grafite--radio" aria-hidden="true"><use href="#i-radio"/></svg>
+      <svg class="estrela" style="--x:9%; --y:14%; --s:46px; --r:-12deg; --c:var(--tinta)" aria-hidden="true"><use href="#i-estrela"/></svg>
+      <svg class="estrela" style="--x:88%; --y:46%; --s:38px; --r:14deg; --c:var(--vermelho)" aria-hidden="true"><use href="#i-estrela"/></svg>
+      <svg class="estrela" style="--x:20%; --y:62%; --s:28px; --r:8deg; --c:var(--neon-ciano)" aria-hidden="true"><use href="#i-estrela"/></svg>
+      <svg class="estrela" style="--x:74%; --y:9%; --s:30px; --r:-20deg; --c:var(--neon-rosa)" aria-hidden="true"><use href="#i-estrela"/></svg>
+      <svg class="grafite grafite--mic" viewBox="0 0 120 260" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="28" y="10" width="64" height="96" rx="32"/>
+          <path d="M28 52h64M28 70h64M44 14v88M60 10v96M76 14v88"/>
+          <path d="M14 70c0 36 20 56 46 56s46-20 46-56"/>
+          <path d="M60 126v52M34 178h52"/>
+          <path d="M60 178c0 30-18 40-6 70" stroke-dasharray="2 10"/>
+        </g>
+      </svg>
+
+      <div class="hero">
+        <p class="hero__apresenta">
+          <span class="selo selo--hero"><img src="imagens/cpbmc-logo.png" alt="" width="249" height="237"></span>
+          <span>CPBMC apresenta</span>
+        </p>
+
+        <p class="hero__rabisco">16 MCs. 15 batalhas.<br>Só um leva a coroa.</p>
+
+        <h1 class="hero__titulo" id="titulo-evento">
+          <svg class="hero__coroa" aria-hidden="true"><use href="#i-coroa"/></svg>
+          <span class="hero__estadual">ESTADUAL</span>
+          <span class="hero__desp">de SP</span>
+          <span class="hero__ano" aria-label="2026">2026</span>
+          <span class="gota" style="--x:12%; --h:46px; --d:.2s"></span>
+          <span class="gota" style="--x:38%; --h:70px; --d:.6s; --c:var(--neon-ciano)"></span>
+          <span class="gota" style="--x:71%; --h:38px; --d:.4s"></span>
+          <span class="gota" style="--x:88%; --h:58px; --d:.9s; --c:var(--neon-rosa)"></span>
+        </h1>
+
+        <p class="hero__fita">BATALHA DE MCs</p>
+
+        <button class="btn-tinta btn-tinta--xl" id="cta-iniciar" type="button">Iniciar campeonato</button>
+        <a class="link-batalha" href="batalha.html">ou entra no <b>simulador de batalha</b> e rima como um dos 16 MCs →</a>
+
+        <p class="hero__nota">
+          <svg aria-hidden="true"><use href="#i-seta"/></svg>
+          sorteio ao vivo · mata-mata · perdeu, tá fora
+        </p>
+
+        <p class="creditos creditos--hero">
+          <span class="creditos__par">realização <a href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener">@cpbmc</a></span>
+          <span aria-hidden="true">✕</span>
+          <span class="creditos__par">artes <a href="https://www.instagram.com/osuporteline/" target="_blank" rel="noopener">@osuporteline</a></span>
+        </p>
+      </div>
+
+      <div class="faixa" aria-hidden="true"><div class="faixa__trilho" id="faixa-trilho"></div></div>
+    </section>
+
+    <!-- ============ TELA DO CAMPEONATO ============ -->
+    <section class="tela tela-chave" id="tela-chave" hidden>
+      <!-- PALCO: a batalha em destaque (preenchido pelo JS) -->
+      <section class="palco" id="palco" aria-label="Palco — batalha em destaque"></section>
+
+      <!-- MURAL: o chaveamento completo -->
+      <section class="mural" id="mural" aria-labelledby="mural-titulo">
+        <header class="mural__cab">
+          <h2 class="mural__titulo" id="mural-titulo">O chaveamento<svg class="mural__estrela" aria-hidden="true"><use href="#i-estrela"/></svg></h2>
+          <p class="mural__nota" id="mural-nota">passa o mouse num MC pra ver o caminho dele · clica numa batalha pra levar pro palco</p>
+        </header>
+
+        <!-- Desktop: chave espelhada (lado esquerdo × lado direito → final no meio) -->
+        <div class="espelho-wrap" id="espelho-wrap">
+          <svg class="conexoes" id="conexoes" aria-hidden="true"></svg>
+          <div class="espelho" id="espelho"></div>
+        </div>
+
+        <!-- Tablet/celular: uma fase por vez -->
+        <div class="lista" id="lista">
+          <div class="lista__abas" id="lista-abas" role="tablist" aria-label="Fases"></div>
+          <div class="lista__jogos" id="lista-jogos" role="tabpanel"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- ============ RODAPÉ: apoio + créditos ============ -->
+  <footer class="rodape-corre" aria-labelledby="corre-titulo">
+    <svg class="estrela" style="--x:12%; --y:22%; --s:40px; --r:-14deg; --c:var(--vermelho)" aria-hidden="true"><use href="#i-estrela"/></svg>
+    <svg class="estrela" style="--x:84%; --y:30%; --s:30px; --r:18deg; --c:var(--neon-ciano)" aria-hidden="true"><use href="#i-estrela"/></svg>
+    <svg class="grafite grafite--radio-rodape" aria-hidden="true"><use href="#i-radio"/></svg>
+    <div class="corre">
+      <span class="selo selo--rodape"><img src="imagens/cpbmc-logo.png" alt="CPBMC" width="249" height="237"></span>
+      <p class="corre__frase" id="corre-titulo">O corre continua<span>...</span></p>
+      <p class="corre__texto">Fortalece o CPBMC na vaquinha da Final Estadual São Paulo 2026 e ajuda a cena a seguir de pé.</p>
+      <a class="btn-tinta btn-tinta--xl btn-apoio" href="https://www.abacashi.com/vaquinha/final-estadual-sao-paulo-2026---cpbmc" target="_blank" rel="noopener"><svg class="btn-apoio__coracao" aria-hidden="true"><use href="#i-coracao"/></svg>Apoie o CPBMC<svg class="btn-apoio__circ" aria-hidden="true"><use href="#i-circulo"/></svg></a>
+    </div>
+    <p class="creditos">
+      <span class="creditos__par">organização <a href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener">@cpbmc</a></span>
+      <span aria-hidden="true">✕</span>
+      <span class="creditos__par">artes dos MCs <a href="https://www.instagram.com/osuporteline/" target="_blank" rel="noopener">@osuporteline</a></span>
+    </p>
+  </footer>
+
+  <!-- ============ SORTEIO AO VIVO ============ -->
+  <div class="overlay sorteio" id="sorteio" role="dialog" aria-modal="true" aria-labelledby="sorteio-titulo" hidden>
+    <div class="sorteio__conteudo">
+      <p class="sorteio__live"><span class="ponto-live" aria-hidden="true"></span> ao vivo</p>
+      <h2 class="sorteio__titulo titulo-pincel" id="sorteio-titulo"><span class="pincel-preto">Sorteio da</span> <span class="pincel-vermelho">1ª fase</span></h2>
+      <p class="sorteio__status" id="sorteio-status">embaralhando os 16 MCs…</p>
+      <div class="sorteio__grade" id="sorteio-grade"></div>
+      <div class="sorteio__acoes">
+        <button class="btn-giz" id="sorteio-pular" type="button">pular animação</button>
+        <button class="btn-tinta" id="sorteio-ver" type="button" hidden>Bora pro palco</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BANNER DE FASE ============ -->
+  <div class="banner-fase" id="banner-fase" aria-hidden="true"></div>
+
+  <!-- ============ CAMPEÃO ============ -->
+  <div class="overlay campeao" id="campeao" role="dialog" aria-modal="true" aria-labelledby="campeao-nome" hidden>
+    <canvas class="campeao__confete" id="confete" aria-hidden="true"></canvas>
+    <div class="campeao__raios" aria-hidden="true"></div>
+    <div class="campeao__conteudo">
+      <p class="campeao__eyebrow">
+        <svg aria-hidden="true"><use href="#i-trofeu"/></svg>
+        Campeão Estadual SP 2026
+        <svg aria-hidden="true"><use href="#i-trofeu"/></svg>
+      </p>
+      <figure class="campeao__foto">
+        <svg class="campeao__coroa" aria-hidden="true"><use href="#i-coroa"/></svg>
+        <span class="campeao__moldura"><img id="campeao-img" src="" alt=""></span>
+        <figcaption class="campeao__num" id="campeao-num"></figcaption>
+      </figure>
+      <h2 class="campeao__nome" id="campeao-nome"></h2>
+      <p class="campeao__texto" id="campeao-texto"></p>
+      <!-- COMPARTILHAR: logo depois do nome do campeão (arte gerada em compartilhar.js) -->
+      <section class="compartilhar" aria-label="Compartilhar o campeão">
+        <figure class="compartilhar__preview">
+          <img id="compartilhar-img" alt="" width="1080" height="1350">
+        </figure>
+        <div class="compartilhar__acoes">
+          <button class="btn-tinta btn-tinta--ouro btn-tinta--xl btn-compartilhar" id="btn-share" type="button">
+            <svg aria-hidden="true"><use href="#i-compartilhar"/></svg>Compartilhar
+          </button>
+          <p class="compartilhar__status" id="compartilhar-status">montando a arte…</p>
+          <button class="btn-giz" id="btn-baixar" type="button">ou baixar a imagem</button>
+        </div>
+      </section>
+      <ol class="campeao__caminho" id="campeao-caminho"></ol>
+      <div class="campeao__acoes">
+        <button class="btn-tinta btn-tinta--papel" id="campeao-fechar" type="button">Ver chaveamento</button>
+        <button class="btn-tinta" id="campeao-novo" type="button">Novo campeonato</button>
+      </div>
+
+      <div class="campeao__corre">
+        <span class="selo selo--campeao"><img src="imagens/cpbmc-logo.png" alt="CPBMC" width="249" height="237"></span>
+        <p class="corre__frase">O corre continua<span>...</span></p>
+        <a class="btn-tinta btn-tinta--ouro btn-apoio" href="https://www.abacashi.com/vaquinha/final-estadual-sao-paulo-2026---cpbmc" target="_blank" rel="noopener"><svg class="btn-apoio__coracao" aria-hidden="true"><use href="#i-coracao"/></svg>Apoie o CPBMC<svg class="btn-apoio__circ" aria-hidden="true"><use href="#i-circulo"/></svg></a>
+        <p class="creditos">
+          <span class="creditos__par">organização <a href="https://www.instagram.com/cpbmc/" target="_blank" rel="noopener">@cpbmc</a></span>
+          <span aria-hidden="true">✕</span>
+          <span class="creditos__par">artes <a href="https://www.instagram.com/osuporteline/" target="_blank" rel="noopener">@osuporteline</a></span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRMAÇÃO ============ -->
+  <dialog class="confirmar" id="confirmar" aria-labelledby="confirmar-titulo">
+    <form method="dialog">
+      <h3 id="confirmar-titulo">Tem certeza?</h3>
+      <p id="confirmar-texto"></p>
+      <div class="confirmar__acoes">
+        <button class="btn-giz" value="nao" type="submit">cancelar</button>
+        <button class="btn-tinta" value="sim" type="submit" id="confirmar-sim">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="anuncio" aria-live="polite"></div>
+  <div class="efeitos" id="efeitos" aria-hidden="true"></div>
+
+  <script src="script.js"></script>
+  <script src="compartilhar.js"></script>
+  <script src="musica.js"></script>
+</body>
+</html>
