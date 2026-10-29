@@ -5,7 +5,7 @@
 // fA/mV = "forma do dia" do adversário / sua · N = batalhas por célula · lv = níveis do SEU MC a testar
 // Perfis de jogador: perfeito/bom/medio/fraco (h = chance de acertar a nota, s = chance de ser perfeito).
 const P = JSON.parse(process.argv[2] || '{}');
-const qA = P.qA ?? .66, qN = P.qN ?? .1, qR = P.qR ?? .12, fA = P.fA ?? .25, mV = P.mV ?? .22, sJ = P.sJ ?? .2, sP = P.sP ?? .38, fat = P.fat ?? .25;
+const qA = P.qA ?? .66, qN = P.qN ?? .08, qR = P.qR ?? .12, fA = P.fA ?? .25, mV = P.mV ?? .22, sJ = P.sJ ?? .26, sP = P.sP ?? .38, fat = P.fat ?? .25;
 const fs = require('fs'), path = require('path');
 const js = fs.readFileSync(path.join(__dirname, '..', 'batalha.js'), 'utf8');
 const MCS = eval(js.match(/const MCS = (\[[\s\S]*?\]);/)[1]);   // lê os níveis direto do jogo
@@ -49,15 +49,15 @@ function round(v, a, b, perfil, voceComeca, rn) {
   const sv = { hype: false }, sa = { hype: false, forma: S(-fA, fA) }, cv = novo(), ca = novo(), mv = 1 + S(-mV, mV);
   const ordem = rn < 2 ? (voceComeca ? ['v','v','v','v','a','a','a','a'] : ['a','a','a','a','v','v','v','v']) : (voceComeca ? ['v', 'a', 'v', 'a'] : ['a', 'v', 'a', 'v']);
   const ult = ordem.length - 1;
-  ordem.forEach((x, e) => { const c = x === 'v' ? cv : ca; if (x === 'v') entradaVoce(MCS[v], b, perfil, sv, cv, mv); else entradaAdv(MCS[a], b, sa, ca); if (e === 0) c.imp += 3; if (e === ult) c.imp += 4; });
+  ordem.forEach((x, e) => { const c = x === 'v' ? cv : ca; if (x === 'v') entradaVoce(MCS[v], b, perfil, sv, cv, mv); else entradaAdv(MCS[a], b, sa, ca); if (e === 0) c.imp += 6; if (e === ult) c.imp += 2; /* BONUS do jogo: iniciativa 6, última palavra 2 */ });
   let votos = 0;
   const nv = MCS[v].nivel, na = MCS[a].nivel, dono = na === 5 && (nv === 2 || nv === 3) ? 'a' : nv === 5 && (na === 2 || na === 3) ? 'v' : null;
   for (const w of VOTO) { if (w === VOTO[2] && dono) { if (dono === 'v') votos++; continue; } const nota = (c) => (c.tec * w.tec + c.imp * w.imp + c.pla * w.pla) * (1 + S(-w.s, w.s)); if (nota(cv) > nota(ca)) votos++; }
   return votos >= 2;
 }
 function batalha(v, a, perfil) {
-  const beats = [0, 1, 2, 3].sort(() => R() - .5); let pv = 0, pa = 0, r = 0, ini = R() < .5;
-  while (pv < 2 && pa < 2) { const com = r === 1 ? !ini : (r === 0 ? ini : R() < .5); if (round(v, a, beats[r], perfil, com, r)) pv++; else pa++; r++; }
+  const beats = [0, 1, 2, 3].sort(() => R() - .5); let pv = 0, pa = 0, r = 0; const comeca = () => R() < .5 || R() < .3; let ini = comeca();   // ganhou o ímpar/par: você começa; perdeu: o adversário começa 70% das vezes
+  while (pv < 2 && pa < 2) { const com = r === 1 ? !ini : (r === 0 ? ini : comeca()); if (round(v, a, beats[r], perfil, com, r)) pv++; else pa++; r++; }
   return pv === 2;
 }
 const perfis = { perfeito: { h: .98, s: .95, punchCombo: 6 }, bom: { h: .88, s: .6, punchCombo: 5 }, medio: { h: .72, s: .4, punchCombo: 4, punchSempre: true }, fraco: { h: .5, s: .3, punchCombo: 3, punchSempre: true } };

@@ -249,13 +249,18 @@ function donoDaRoda(a, b) {
 }
 
 /** batalha entre dois MCs controlados pelo computador (rounds em beats sorteados, 2 jurados + plateia) */
+/* Batalhas da chave que o computador simula (sem você).
+   Força por nível (tabela, não linear: o 4 fica perto do 5), atributos pesando pouco e uma
+   "forma do dia" sorteada por batalha, que gera zebras. Referência (20 mil chaves):
+   2x3 ≈ 35% · 2x4 ≈ 21% · 3x4 ≈ 36% · 4x5 ≈ 43% · 3x5 ≈ 13% · 2x5 ≈ 6% (o mais fraco vencendo). */
+const SIM = { nivel: [0, 0, 0, 3.5, 7, 8.5], atributo: .05, forma: 10, divisor: 7 };
 function simularBatalha(a, b) {
-  const beats = sortearBeats();
-  const placar = [0, 0];
+  const beats = sortearBeats(), placar = [0, 0], dono = donoDaRoda(a, b);
+  const forca = (i, bt) => SIM.nivel[MCS[i].nivel] + (forcaNoBeat(MCS[i], bt) - 65) * SIM.atributo;
+  const formaA = sorte(-SIM.forma, SIM.forma), formaB = sorte(-SIM.forma, SIM.forma);
   for (let r = 0; placar[0] < 2 && placar[1] < 2; r++) {
-    const fa = forcaNoBeat(MCS[a], beats[r]) + MCS[a].nivel * 4, fb = forcaNoBeat(MCS[b], beats[r]) + MCS[b].nivel * 4;
-    const pA = 1 / (1 + Math.exp(-(fa - fb) / 9)), dono = donoDaRoda(a, b);
-    const votosA = (Math.random() < pA) + (Math.random() < pA) + (dono === null ? Math.random() < pA : dono === a);
+    const pA = 1 / (1 + Math.exp(-(forca(a, beats[r]) + formaA - forca(b, beats[r]) - formaB) / SIM.divisor));
+    const votosA = (Math.random() < pA) + (Math.random() < pA) + (dono === null ? Math.random() < pA : dono === a);   // 2 jurados + plateia
     placar[votosA >= 2 ? 0 : 1]++;
   }
   return { vencedor: placar[0] > placar[1] ? a : b, placar };
@@ -1007,7 +1012,7 @@ function chamarPlateia() {
 function planejarEntradaAdv(e) {
   const R = J.rnd, mc = MCS[J.bat.adv], E = R.entradas[e];
   const forca = forcaNoBeat(mc, R.beatId) / 100;
-  const q = limitar(forca * .66 + mc.nivel * .1 + R.formaAdv + sorte(-.12, .12), .2, .97);   // qualidade desta entrada
+  const q = limitar(forca * .66 + mc.nivel * .08 + R.formaAdv + sorte(-.12, .12), .2, .97);   // qualidade desta entrada
   const evs = [];
   let plateiaFeita = R.hype.adv;
   for (let c = 0; c < E.dur; c += 16) {
@@ -1110,8 +1115,8 @@ function palcoFlash(txt) {
 
 /* ---------- fim do round: 2 jurados + 1 voto da plateia ---------- */
 const VOTANTES = [
-  { id: 'j1', nome: 'Jurado 1', olho: 'técnica e flow',     peso: { tec: 1, imp: .5, pla: .2 },  ruido: .2 },
-  { id: 'j2', nome: 'Jurado 2', olho: 'punchline e impacto', peso: { tec: .5, imp: 1.1, pla: .3 }, ruido: .2 },
+  { id: 'j1', nome: 'Jurado 1', olho: 'técnica e flow',     peso: { tec: 1, imp: .5, pla: .2 },  ruido: .26 },
+  { id: 'j2', nome: 'Jurado 2', olho: 'punchline e impacto', peso: { tec: .5, imp: 1.1, pla: .3 }, ruido: .26 },
   { id: 'pl', nome: 'Plateia',  olho: 'barulho da roda',     peso: { tec: .4, imp: .8, pla: 1.2 }, ruido: .38 }
 ];
 function apurarVotos(R) {

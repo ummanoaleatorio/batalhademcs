@@ -53,7 +53,8 @@ O CSP (`script-src 'self'`) exige que todo JS fique em arquivo próprio, sem `<s
 - **Votos** ficam em `VOTANTES`: Jurado 1 (técnica), Jurado 2 (punchline) e Plateia.
   - Os pontos são separados em técnica, impacto e plateia, e cada votante pesa diferente.
   - **Regra da plateia:** nível 5 contra nível 2 ou 3 sempre leva o voto da plateia (função `donoDaRoda`).
-- **Dificuldade da IA:** em `planejarEntradaAdv`, `forca * .66 + nivel * .1 + formaAdv`. A sorte dos votos fica em `ruido`, e a "forma do dia" fica em `formaVoce` e `formaAdv`, dentro de `iniciarRound`.
+- **Batalhas da chave sem você:** `simularBatalha()` usa `SIM` (peso do nível, dos atributos e da forma do dia). A força de cada nível vem de uma tabela, então o 4 fica perto do 5. Hoje o mais fraco vence: 2x4 ~21%, 3x4 ~36%, 4x5 ~43%, 3x5 ~13%.
+- **Dificuldade da IA:** em `planejarEntradaAdv`, `forca * .66 + nivel * .08 + formaAdv`. A sorte dos votos fica em `ruido`, e a "forma do dia" fica em `formaVoce` e `formaAdv`, dentro de `iniciarRound`.
 - Antes de mudar esses números, rode `node ferramentas/simular-equilibrio.js` e compare as tabelas. Hoje, com um MC nível 2 jogando "bom", a chance é ~50% contra nível 4 e ~4% contra nível 5.
 
 ## Desempenho (pra não travar)
