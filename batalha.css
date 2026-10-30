@@ -524,3 +524,35 @@ canvas.plateia-sombra { width: 100%; display: block; }
 .chave-vis, .pos__chave { padding: 8px 10px 14px; }
 @keyframes cv-brilho-v { from { box-shadow: 0 0 0 3px var(--vermelho); } to { box-shadow: 0 0 0 3px var(--vermelho), 0 0 10px 2px rgba(193, 50, 52, .55); } }
 @keyframes cv-brilho-o { from { box-shadow: 0 0 0 3px var(--ouro), 3px 4px 0 var(--tinta); } to { box-shadow: 0 0 0 3px var(--ouro), 0 0 12px 3px rgba(242, 185, 46, .7); } }
+
+/* ===== estímulos: calor da sequência, faíscas, FATALITY ===== */
+.pad__txt.conta { font-size: 1.5rem; padding: 2px 16px; background: var(--ouro); color: var(--tinta); }
+/* o botão do MC esquenta conforme a sequência */
+#palco[data-calor="1"] .pad:not(.pad--adv) { box-shadow: 0 0 0 5px var(--papel), 0 0 0 9px #ff8a2b, 0 0 22px 8px rgba(255, 138, 43, .45), 6px 8px 0 9px var(--tinta); }
+#palco[data-calor="2"] .pad:not(.pad--adv) { box-shadow: 0 0 0 5px var(--ouro), 0 0 0 10px #ff6a2b, 0 0 34px 14px rgba(255, 90, 30, .6), 6px 8px 0 10px var(--tinta); }
+#palco[data-calor="3"] .pad:not(.pad--adv) { box-shadow: 0 0 0 5px #fff3c4, 0 0 0 11px #ff3d1f, 0 0 48px 20px rgba(255, 60, 20, .7), 6px 8px 0 11px var(--tinta); }
+#palco[data-calor="2"] .pad:not(.pad--adv)::after, #palco[data-calor="3"] .pad:not(.pad--adv)::after { border: 4px dashed #ff6a2b; animation-duration: 2s; }
+#palco[data-calor="3"] .pad:not(.pad--adv)::after { border-color: var(--ouro); animation-duration: 1s; }
+#palco[data-calor="2"], #palco[data-calor="3"] { background-image: radial-gradient(ellipse at 30% 55%, rgba(255, 106, 43, .16), transparent 60%); }
+#palco[data-calor="3"] { background-image: radial-gradient(ellipse at 30% 55%, rgba(255, 60, 20, .26), transparent 65%); }
+.combo[data-calor="1"] b { color: #ff8a2b; }
+.combo[data-calor="2"] b { color: #ff5a1e; font-size: 2.2rem; text-shadow: 0 0 10px rgba(255, 90, 30, .6); }
+.combo[data-calor="3"] b { color: #ff3d1f; font-size: 2.6rem; text-shadow: 0 0 14px rgba(255, 60, 20, .8), 2px 2px 0 var(--ouro); }
+/* anúncio do nível de calor */
+.calor-banner { position: absolute; left: 50%; top: 24%; z-index: 7; pointer-events: none; font-family: var(--f-titulo); font-size: clamp(1.8rem, 6vw, 2.8rem); letter-spacing: .04em; color: var(--papel); -webkit-text-stroke: 2px var(--tinta); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--tinta); white-space: nowrap; animation: calor-entra 1.3s cubic-bezier(.2, 1.5, .4, 1) forwards; }
+.calor-banner--1 { color: #ffb36b; }
+.calor-banner--2 { color: #ff6a2b; }
+.calor-banner--3 { color: var(--ouro); font-size: clamp(2.2rem, 7.5vw, 3.4rem); }
+@keyframes calor-entra { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.5) rotate(-6deg); } 18% { opacity: 1; transform: translate(-50%, 0) scale(1.15) rotate(-4deg); } 30% { transform: translate(-50%, 0) scale(1) rotate(-4deg); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -30px) scale(1) rotate(-4deg); } }
+/* esfriou: combo quebrado depois de uma sequência */
+#palco.esfriou { animation: esfriou .45s ease-out; }
+@keyframes esfriou { 30% { filter: grayscale(.8) brightness(.85); transform: translateX(-4px); } 60% { transform: translateX(4px); } }
+/* FATALITY: tela inteira */
+.fatality-tela { position: fixed; inset: 0; z-index: 90; pointer-events: none; display: grid; place-items: center; align-content: center; gap: 6px; background: radial-gradient(circle, rgba(120, 0, 0, .55), rgba(20, 0, 0, .85)); animation: fat-fundo 2.2s ease forwards; }
+.fatality-tela b { font-family: var(--f-titulo); font-weight: 400; font-size: clamp(3.4rem, 15vw, 9rem); line-height: .9; letter-spacing: .03em; color: #e01b1b; -webkit-text-stroke: 3px #1a0000; paint-order: stroke fill; text-shadow: 0 0 30px rgba(255, 30, 30, .9), 6px 6px 0 #000; animation: fat-letra 2.2s cubic-bezier(.2, 1.4, .3, 1) forwards; }
+.fatality-tela small { font-family: var(--f-rua); font-size: clamp(1.1rem, 4vw, 1.7rem); color: var(--ouro); animation: fat-sub 2.2s ease forwards; }
+@keyframes fat-fundo { 0% { opacity: 0; } 6% { opacity: 1; background-color: rgba(255, 255, 255, .6); } 12% { background-color: transparent; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes fat-letra { 0% { transform: scale(3.5) rotate(-8deg); opacity: 0; } 14% { transform: scale(.92) rotate(-3deg); opacity: 1; } 22% { transform: scale(1.04) rotate(-3deg); } 30% { transform: scale(1) rotate(-3deg); } 34% { transform: translate(-6px, 3px) rotate(-3deg); } 38% { transform: translate(6px, -3px) rotate(-3deg); } 42% { transform: none rotate(-3deg); } 85% { opacity: 1; } 100% { opacity: 0; transform: scale(1.1) rotate(-3deg); } }
+@keyframes fat-sub { 0%, 25% { opacity: 0; transform: translateY(10px); } 35% { opacity: 1; transform: none; } 85% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .calor-banner, #palco.esfriou, .fatality-tela, .fatality-tela b, .fatality-tela small { animation-duration: .01s; } }
+body.leve #palco[data-calor] { background-image: none; }

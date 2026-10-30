@@ -45,8 +45,10 @@ O CSP (`script-src 'self'`) exige que todo JS fique em arquivo próprio, sem `<s
   - Ímpar ou par acontece no R1 e no R3.
 - **Jogar:** clica no seu MC (ou aperta espaço) quando a nota chega na linha vermelha.
   - Tolerância em `JANELA` (perfeito 90 ms, boa 170 ms). Clicar fora de qualquer nota quebra o combo, pra ninguém sair metralhando.
-  - Cada nota perfeita é FATALITY. 2 compassos perfeitos seguidos soltam um FATALITY grande.
-  - 4 compassos limpos seguidos soltam a punchline automática.
+  - Cada vez sua começa com 1 compasso livre e contagem 3, 2, 1, VAI no botão (`ESPERA_COMPASSOS`).
+  - Compassos limpos seguidos esquentam a tela (`CALOR`): 2 = AQUECEU, 4 = EM CHAMAS e punchline automática, 6 = IMPARÁVEL.
+  - **FATALITY é o ápice:** 8 compassos seguidos sem errar (`FATALITY_COMPASSOS`) soltam a tela cheia, +10 pontos e a plateia explodindo.
+  - Acertos soltam faíscas na linha da trilha. Nota perfeita mostra PERFEITO e a roda solta um "UH".
 - **Beats** ficam em `BEATS` (nome, som, padrao, peso, dica):
   - `som` é o loop do `musica.js`: classico, jazz, sujo, pesado, rapido, turbo, lento, arrastado.
   - `padrao` é o ritmo do clique, definido em `PADROES`: tempo, meio, dobrado, sincopado, galope, contratempo.

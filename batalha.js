@@ -130,6 +130,7 @@ const INTRO = 4;              // batidas antes da 1ª entrada (contagem 3, 2, 1)
 const SEGUNDOS_ENTRADA = 45;  // rounds 1 e 2: cada MC rima ~45 s seguidos
 const BATE_VOLTA = 16;        // round 3: entradas curtas alternadas (4 compassos)
 const BATE_VOLTA_N = 4;       // quantas entradas no bate-volta
+const ESPERA_COMPASSOS = 1;   // compassos sem nota no começo de cada vez sua (contagem 3, 2, 1, VAI no botão)
 /* quem começa o round tem uma leve vantagem (dita o ritmo); quem responde fica com a última palavra.
    Diferença pequena de propósito: num round de ~150–250 pontos, 4 pontos não decidem sozinhos. */
 const BONUS = { iniciativa: 6, ultimaPalavra: 2 };
@@ -487,7 +488,7 @@ function telaPre() {
         <ul>
           <li><b>Na sua vez</b>, as notas deslizam na trilha: <b>clica no seu MC</b> quando cada uma chegar na <b>linha vermelha</b>. Clicar à toa quebra o combo.</li>
           <li>Cada beat tem um <b>ritmo de clique</b>: no tempo, meio tempo, dobrado, galope, sincopado ou contratempo.</li>
-          <li>Acerto perfeito é <b>FATALITY</b>. Emendou 4 compassos sem errar? A <b>punchline</b> sai sozinha.</li>
+          <li>Emendou compassos sem errar? A tela <b>pega fogo</b>, 4 seguidos soltam a <b>punchline</b> e 8 seguidos soltam o <b>FATALITY</b>.</li>
           <li><b>Chamar a plateia</b>: 1 por round. Seus lances seguintes valem mais.</li>
           <li><b>Encarar</b>: 1 por round, na entrada do adversário. Se der certo, ele trava.</li>
           <li><b>Quem decide</b>: 2 jurados (um olha técnica, outro punchline) e 1 voto da plateia.</li>
@@ -719,6 +720,7 @@ function comecarEntrada(e) {
   R.entrada = e;
   R.noMic = E.quem;
   document.body.classList.toggle('vez-voce', E.quem === 'voce');
+  const palcoEl = $('#palco'); if (palcoEl) palcoEl.dataset.calor = 0;
   renderPlacar(); atualizarPontos();
   const mc = mcDe(R.noMic), voce = R.noMic === 'voce';
   const minhas = R.entradas.filter((x) => x.quem === E.quem), n = minhas.indexOf(E) + 1;
@@ -728,13 +730,13 @@ function comecarEntrada(e) {
     // notas da entrada (posição em batidas, a partir do início do round)
     R.notas = []; R.comps = []; R.mudancas = [];
     let anterior = null;
-    for (let c = 0; c * 4 < E.dur; c++) {
+    for (let c = ESPERA_COMPASSOS; c * 4 < E.dur; c++) {   // o 1º compasso fica livre: dá tempo de se preparar
       const pd = padraoNoCompasso(R.beatId, c), notas = PADROES[pd].notas;
       if (pd !== anterior) { R.mudancas.push({ t: E.ini + c * 4, pd, primeira: anterior === null }); anterior = pd; }
-      R.comps.push({ resta: notas.length, limpo: true, perfeito: true });
+      R.comps[c] = { resta: notas.length, limpo: true, perfeito: true };
       notas.forEach((x) => R.notas.push({ t: E.ini + c * 4 + x, comp: c, feita: false }));
     }
-    Object.assign(R, { prox: 0, combo: 0, seqComp: 0, seqPerf: 0, acertos: 0, semToque: 0, txtPad: '', pb: 0, ultSeg: -1 });
+    Object.assign(R, { prox: 0, combo: 0, seqComp: 0, seqPerf: 0, acertos: 0, semToque: 0, txtPad: '', pb: 0, ultSeg: -1, calor: 0, part: [] });
     palco(`<div class="pal-mic pal-mic--voce">
       <p class="pal-mic__quem"><b>SUA VEZ</b> · ${qual} · ${seloRitmo(R.padrao)} · faltam <span id="restam">${seg}</span></p>
       <div class="pista" aria-hidden="true"><canvas id="pista-cv"></canvas></div>
@@ -750,7 +752,7 @@ function comecarEntrada(e) {
       <div class="jogadas">
         <button class="jogada" id="btn-plateia" type="button" ${R.plateiaUsada ? 'disabled' : ''}><b>Chamar a plateia</b><small>${R.plateiaUsada ? 'já usou' : '1 por round'}</small></button>
       </div>
-      <p class="dica dica--clique"><b>Clica no seu MC</b> quando a nota chegar na linha vermelha. Compassos limpos soltam <b>punchline</b> e <b>fatality</b>.</p>
+      <p class="dica dica--clique"><b>Clica no seu MC</b> quando a nota chegar na linha vermelha. Sem errar: 4 compassos = <b>punchline</b>, 8 = <b>FATALITY</b>.</p>
       <p class="dica dica--teclas">também dá pra usar <kbd>espaço</kbd> · <kbd>C</kbd> plateia</p>
     </div>`);
     const p = $('#pad');
@@ -819,7 +821,12 @@ function moverTrilha(b) {
     R.pcv = cv; R.pw = r.width; R.ph = r.height; R.pb = r.width < 400 ? 58 : 72;
   }
   const c = R.pctx, w = R.pw, h = R.ph, pb = R.pb, ax = w * .18, cy = h / 2, agora = performance.now();
-  c.fillStyle = '#141212'; c.fillRect(0, 0, w, h);
+  c.fillStyle = ['#141212', '#24140f', '#3a150f', '#54140f'][R.calor || 0]; c.fillRect(0, 0, w, h);
+  if (R.calor >= 2) {   // brasa pulsando na linha
+    const g = c.createRadialGradient(ax, cy, 4, ax, cy, 60 + R.calor * 20);
+    g.addColorStop(0, 'rgba(255,106,43,.45)'); g.addColorStop(1, 'rgba(255,106,43,0)');
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+  }
   const desde = b - ax / pb - .5, ate = b + (w - ax) / pb + .5;
   // mudanças de ritmo: linha tracejada amarela com o nome
   c.font = '600 9px "Bebas Neue", Impact, sans-serif'; c.textBaseline = 'top';
@@ -852,6 +859,16 @@ function moverTrilha(b) {
   c.fillStyle = fl ? R.flash.cor : '#c13234'; c.fillRect(ax - 2, 0, 4, h);
   c.strokeStyle = fl ? R.flash.cor : '#c13234'; c.lineWidth = 3;
   c.beginPath(); c.arc(ax, cy, 17, 0, Math.PI * 2); c.stroke();
+  // faíscas
+  if (R.part && R.part.length) {
+    R.part = R.part.filter((p) => agora - p.t < p.vida);
+    for (const p of R.part) {
+      const s = (agora - p.t) / 1000, vida = 1 - (agora - p.t) / p.vida;
+      c.globalAlpha = Math.max(0, vida); c.fillStyle = p.cor;
+      c.beginPath(); c.arc(ax + p.vx * s, cy + p.vy * s + 120 * s * s, p.r, 0, Math.PI * 2); c.fill();
+    }
+    c.globalAlpha = 1;
+  }
 }
 window.addEventListener('resize', () => { if (J.rnd) J.rnd.pctx = null; plateiaCv.pronto = false; });
 
@@ -870,7 +887,13 @@ function medirDesempenho() {
 /** soma um acerto no combo (o combo é só o contador de toques seguidos) */
 /** texto do botão: avisa quando o ritmo vai mudar */
 function avisoRitmo(b) {
-  const R = J.rnd;
+  const R = J.rnd, E = R.entradas[R.entrada], livre = E.ini + ESPERA_COMPASSOS * 4 - b;
+  if (livre > 0) {   // contagem antes das notas
+    const n = Math.ceil(livre), txt = n > 3 ? 'prepara…' : n === 1 ? 'VAI!' : String(n - 1);
+    if (txt !== R.txtPad) { R.txtPad = txt; const el = $('#pad-txt'); if (el) { el.innerHTML = txt; el.classList.toggle('conta', true); el.classList.remove('muda'); } }
+    return;
+  }
+  $('#pad-txt')?.classList.remove('conta');
   const m = R.mudancas.find((x) => !x.primeira && x.t > b - 1 && x.t - b <= 2.5);
   const txt = m ? (m.t > b ? `muda!<small>${PADROES[m.pd].nome}</small>` : PADROES[m.pd].nome) : 'clica no ritmo!';
   if (txt !== R.txtPad) { R.txtPad = txt; const el = $('#pad-txt'); if (el) { el.innerHTML = txt; el.classList.toggle('muda', !!m); } }
@@ -879,13 +902,13 @@ function somarCombo() {
   const R = J.rnd, S = J.bat.stats;
   R.combo++; R.semToque = 0;
   S.maiorCombo = Math.max(S.maiorCombo, R.combo);
-  const c = $('#combo'); if (c) { c.innerHTML = `combo <b>${R.combo}</b>`; if (R.combo % 8 === 0) { c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } }
+  const c = $('#combo'); if (c) { c.innerHTML = `combo <b>${R.combo}</b>`; c.dataset.calor = R.calor || 0; if (R.combo % 8 === 0) { c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } }
 }
 function quebrarCombo(motivo) {
   const R = J.rnd;
   if (R.combo >= 4 && motivo) lance('voce', 'ruim', motivo.replace('%c', R.combo), 0);
   R.combo = 0; R.embalo = Math.max(-3, R.embalo - 1);
-  const c = $('#combo'); if (c) c.innerHTML = 'combo <b>0</b>';
+  const c = $('#combo'); if (c) { c.innerHTML = 'combo <b>0</b>'; c.dataset.calor = 0; }
 }
 /** registra o resultado de uma nota no compasso dela; quando o compasso termina, vira lance */
 function registrarNota(nt, nota) {
@@ -906,15 +929,63 @@ function fecharCompasso(C) {
     lance('voce', comp >= 2 ? 'top' : 'bom', escolher(frases), pts);
     if (comp >= 2) Som.plateia(.5, .8);
     R.embalo = Math.min(3, R.embalo + 1);
-    if (comp % 4 === 0) punchlineAuto();   // 4 compassos sem errar: a punch vem
-  } else R.seqComp = 0;
-  if (C.perfeito) {
-    if (++R.seqPerf % 2 === 0) {   // 2 compassos perfeitos seguidos: FATALITY grande
-      Som.fatality(true); R.cat.voce.pla += 1;
-      lance('voce', 'top', escolher(['<b>FATALITY!</b> Dois compassos cravados, a roda gritou!', '<b>FATALITY!</b> Nem uma sílaba fora do lugar.']), 2, 'pla');
-      mostrarFeedback('FATALITY!!', 'perfeito');
-    }
-  } else R.seqPerf = 0;
+    if (comp % 4 === 0 && comp % FATALITY_COMPASSOS !== 0) punchlineAuto();   // 4 compassos sem errar: a punch vem
+    if (comp % FATALITY_COMPASSOS === 0) soltarFatality(comp);                  // o ápice
+    else ajustarCalor();
+  } else { if (R.seqComp >= 2) esfriou(); R.seqComp = 0; ajustarCalor(); }
+  if (C.perfeito) R.seqPerf++; else R.seqPerf = 0;
+}
+
+/* ---------- calor da sequência: quanto mais compassos limpos, mais a tela pega fogo ---------- */
+const FATALITY_COMPASSOS = 8;   // compassos limpos seguidos pra soltar o FATALITY
+const CALOR = [null, { de: 2, nome: 'AQUECEU!' }, { de: 4, nome: 'EM CHAMAS!' }, { de: 6, nome: 'IMPARÁVEL!' }];
+function ajustarCalor() {
+  const R = J.rnd, ciclo = R.seqComp % FATALITY_COMPASSOS || (R.seqComp ? FATALITY_COMPASSOS : 0);
+  const novo = ciclo >= 6 ? 3 : ciclo >= 4 ? 2 : ciclo >= 2 ? 1 : 0;
+  if (novo === R.calor) return;
+  const subiu = novo > (R.calor || 0);
+  R.calor = novo;
+  const palcoEl = $('#palco'); if (palcoEl) palcoEl.dataset.calor = novo;
+  if (subiu && novo > 0) {
+    anunciarCalor(CALOR[novo].nome, novo);
+    Som.plateia(.45 + novo * .15, 1); agitarPlateia(700 + novo * 300);
+  }
+}
+function anunciarCalor(txt, nivel) {
+  const el = document.createElement('div');
+  el.className = `calor-banner calor-banner--${nivel}`; el.textContent = txt;
+  $('#palco')?.append(el); setTimeout(() => el.remove(), 1300);
+}
+function esfriou() {
+  const p = $('#palco'); if (!p) return;
+  p.classList.remove('esfriou'); void p.offsetWidth; p.classList.add('esfriou');
+}
+/** FATALITY: o ápice — 8 compassos seguidos sem errar */
+function soltarFatality(comp) {
+  const R = J.rnd, S = J.bat.stats;
+  S.fatal++; R.cat.voce.pla += 3;
+  lance('voce', 'explode', escolher([`<b>FATALITY!</b> ${comp} compassos sem errar uma sílaba. A roda perdeu a linha!`, '<b>FATALITY!</b> Isso não foi rima, foi execução!', '<b>FATALITY!</b> O adversário pediu pra sair da roda!']), 10, 'pla');
+  Som.fatality(true); Som.plateia(1, 2.6); Som.buzina(true);
+  const el = document.createElement('div');
+  el.className = 'fatality-tela'; el.innerHTML = '<b>FATALITY</b><small>' + comp + ' compassos limpos</small>';
+  document.body.append(el); setTimeout(() => el.remove(), REDUZIR ? 900 : 2200);
+  if (!REDUZIR) { sprayEm($('#pad'), 90); setTimeout(() => sprayEm($('#placar'), 50), 250); }
+  $('#palco')?.classList.remove('tremor'); void $('#palco')?.offsetWidth; $('#palco')?.classList.add('tremor');
+  agitarPlateia(2600);
+  R.calor = 3; const palcoEl = $('#palco'); if (palcoEl) palcoEl.dataset.calor = 3;
+}
+
+/** faíscas saindo da linha de acerto (desenhadas no canvas da trilha) */
+function faiscas(nota) {
+  const R = J.rnd; if (!R || REDUZIR || document.body.classList.contains('leve')) return;
+  if (nota === 'fora') return;
+  const qtd = (nota === 'perfeito' ? 9 : 5) + (R.calor || 0) * 4;
+  const cores = R.calor >= 2 ? ['#f2b92e', '#ff6a2b', '#c13234', '#fff3c4'] : nota === 'perfeito' ? ['#f2b92e', '#fff3c4'] : ['#3fb35f', '#bff0c9'];
+  R.part = R.part || [];
+  for (let i = 0; i < qtd && R.part.length < 160; i++) {
+    const ang = sorte(-Math.PI, Math.PI), v = sorte(40, 140 + (R.calor || 0) * 40);
+    R.part.push({ x: 0, y: 0, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 30, t: performance.now(), vida: sorte(280, 520), cor: escolher(cores), r: sorte(1.5, 3.5) });
+  }
 }
 function pulsoPad(ok) { const pad = $('#pad'); if (pad) { pad.classList.remove('hit', 'miss'); void pad.offsetWidth; pad.classList.add(ok ? 'hit' : 'miss'); } }
 
@@ -935,9 +1006,10 @@ function punchlineAuto() {
 }
 
 /** fatality: cada acerto perfeito solta um "UH" da roda */
+/** cada acerto perfeito: a roda solta um "UH" (o FATALITY de verdade é o ápice, ver soltarFatality) */
 function fatality() {
-  const R = J.rnd, S = J.bat.stats;
-  S.fatal++; R.cat.voce.pla += .25;
+  const R = J.rnd;
+  R.cat.voce.pla += .25;
   const agora = performance.now();
   if (agora - R.ultimoFat > 280) { Som.fatality(false); R.ultimoFat = agora; }
 }
@@ -971,7 +1043,8 @@ function bater() {
   S.batidas++;
   acertoNaPista(nota);
   nt.res = nota === 'fora' ? 'erro' : 'ok'; nt.tRes = performance.now();
-  mostrarFeedback(nota === 'perfeito' ? 'FATALITY' : nota === 'boa' ? 'BOA' : 'FORA', nota);
+  mostrarFeedback(nota === 'perfeito' ? (R.calor >= 2 ? 'PERFEITO!' : 'PERFEITO') : nota === 'boa' ? 'BOA' : 'FORA', nota);
+  faiscas(nota);
   if (nota === 'fora') { S.erros++; quebrarCombo('Atravessou o beat e <b>perdeu o combo de %c</b>.'); }
   else {
     if (nota === 'perfeito') { S.perfeitos++; Som.clique(); fatality(); } else S.bons++;
